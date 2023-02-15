@@ -43,8 +43,6 @@ class MainActivity : AppCompatActivity() {
                     //Pulir codigo para que no explote si introduces coma al iniciar
                 }
 
-
-
             }else {
                 tvShow.append(view.text)
                 addOperation = true
@@ -79,6 +77,61 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun equalsAction(view: View) {
-        var hola = ArrayList<Any>()
+       tvResult.text = result()
+    }
+
+    fun result(): String {
+        val operations = sortOperations()
+        if (operations.isEmpty())
+            return ""
+
+        val calculations = priorityCalculations(operations)
+        if (calculations.isEmpty())
+            return ""
+
+        val result = calculate(calculations)
+
+        return result.toString()
+    }
+
+    fun sortOperations(): ArrayList<Any> {
+        val operations = ArrayList<Any>()
+        var currentDigit = ""
+
+        for (c in tvShow.text) {
+            if (c.isDigit() || c == ',') {
+                currentDigit += c
+            }else {
+                operations.add(currentDigit.toDouble())
+                currentDigit = ""
+                operations.add(c)
+            }
+        }
+
+        if (currentDigit != "") {
+            operations.add(currentDigit.toDouble())
+        }
+
+        return operations
+    }
+
+    fun priorityCalculations(operations: ArrayList<Any>): ArrayList<Any> {
+        val calculations = ArrayList<Any>()
+
+
+
+        return calculations
+    }
+
+    fun calculate(calculations: ArrayList<Any>): Double {
+        var calculate = calculations[0] as Double
+
+        for (i in calculations.indices) {
+            if (calculations[i] is Char && i != calculations.lastIndex) {
+                
+            }
+        }
+
+        return calculate
     }
 }
