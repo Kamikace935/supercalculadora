@@ -70,10 +70,12 @@ class MainActivity : AppCompatActivity() {
 
     fun eraseAction(view: View) {
         view.setOnClickListener{
-            if (tvShow.length() > 0)
-                if (tvShow.text.last() == '.')
+            if (tvShow.length() > 0) {
+                if (tvShow.text.last() == '.') {
                     addDecimal = true
+                }
                 tvShow.text = tvShow.text.dropLast(1)
+            }
         }
 
         view.setOnLongClickListener{
@@ -140,23 +142,28 @@ class MainActivity : AppCompatActivity() {
             if (operations[i] is Char && i != operations.lastIndex && i < rebootIndex) {
                 val operator = operations[i]
                 val prevDigit = operations[i-1] as Double
-                val nextDigit: Double = operations[i+1] as Double
+                val nextDigit: Double? = if ((i+1) < operations.size) {
+                                            operations[i + 1] as Double
+                                        } else {
+                                            null
+                                        }
+
                 when (operator) {
                     'x' -> {
-                        calculations.add(prevDigit * nextDigit)
+                        calculations.add(prevDigit * nextDigit!!)
                         rebootIndex = i + 1
                     }
                     '/' -> {
-                        calculations.add(prevDigit / nextDigit)
+                        calculations.add(prevDigit / nextDigit!!)
                         rebootIndex = i + 1
                     }
-                    /*'%' -> {
+                    '%' -> {
                         if (nextDigit == null) {
                             calculations.add(prevDigit/100)
                         }else {
                             calculations.add((prevDigit/100) * nextDigit)
                         }
-                    }*/
+                    }
                     else -> {
                         calculations.add(prevDigit)
                         calculations.add(operator)

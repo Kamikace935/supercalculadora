@@ -64,7 +64,11 @@
             android:textColor="@color/red"
             android:text="@string/erase"
             android:onClick="eraseAction"/>
-        
+
+        <Button
+            style="@style/operations"
+            android:text="@string/percent"/>
+
         <Button
             style="@style/operations"
             android:text="@string/split"/>
