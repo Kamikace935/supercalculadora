@@ -10,9 +10,11 @@ import android.widget.Button
 import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
+
     /*Con apply plugin: 'kotlin-android-extension'
     * se referenciaran directamente los TextView
     * sin que sea necesario inicializarlos*/
+
     private lateinit var tvResult: TextView
     private lateinit var tvShow: TextView
     private var addOperation: Boolean = false
@@ -35,19 +37,20 @@ class MainActivity : AppCompatActivity() {
         if (view is Button) {
             /*Si el texto recogido es una coma comprueba
             * que no ha sido añadida antes con un buleano*/
-            if (view.text == ",") {
-                val char = tvShow.text.last()
-                if (addDecimal && char.isDigit()) {
-                    tvShow.append(view.text)
-                    addDecimal = false
-                    //Pulir codigo para que no explote si introduces coma al iniciar
-                }
+            if (view.text == ".") {
+                if (tvShow.text.isNotEmpty()) {
+                    val c = tvShow.text.last()
 
+                    if (addDecimal && c.isDigit()) {
+                        tvShow.append(view.text)
+                        addDecimal = false
+                    }
+                }
             }else {
                 tvShow.append(view.text)
                 addOperation = true
-                /*Si se ha añadido un número permite añadir un operador*/
             }
+                /*Si se ha añadido un número permite añadir un operador*/
         }
     }
 
@@ -62,16 +65,20 @@ class MainActivity : AppCompatActivity() {
     fun allClearAction(view: View) {
         tvShow.text = ""
         tvResult.text = ""
+        addDecimal = true
     }
 
     fun eraseAction(view: View) {
         view.setOnClickListener{
             if (tvShow.length() > 0)
+                if (tvShow.text.last() == '.')
+                    addDecimal = true
                 tvShow.text = tvShow.text.dropLast(1)
         }
 
         view.setOnLongClickListener{
             tvShow.text = ""
+            addDecimal = true
             true
         }
     }
@@ -80,26 +87,26 @@ class MainActivity : AppCompatActivity() {
        tvResult.text = result()
     }
 
-    fun result(): String {
+    private fun result(): String {
         val operations = sortOperations()
         if (operations.isEmpty())
             return ""
 
-        val calculations = priorityCalculations(operations)
+        val calculations = givePriority(operations)
         if (calculations.isEmpty())
             return ""
 
-        val result = calculate(calculations)
+        val result = finalCalculations(calculations)
 
         return result.toString()
     }
 
-    fun sortOperations(): ArrayList<Any> {
+    private fun sortOperations(): ArrayList<Any> {
         val operations = ArrayList<Any>()
         var currentDigit = ""
 
         for (c in tvShow.text) {
-            if (c.isDigit() || c == ',') {
+            if (c.isDigit() || c == '.') {
                 currentDigit += c
             }else {
                 operations.add(currentDigit.toDouble())
@@ -115,20 +122,71 @@ class MainActivity : AppCompatActivity() {
         return operations
     }
 
-    fun priorityCalculations(operations: ArrayList<Any>): ArrayList<Any> {
-        val calculations = ArrayList<Any>()
+    private fun givePriority(operations: ArrayList<Any>): ArrayList<Any> {
+        var calculations = operations
 
-
+        while (calculations.contains('/') || calculations.contains('x')) {
+            calculations = priorityCalculations(calculations)
+        }
 
         return calculations
     }
 
-    fun calculate(calculations: ArrayList<Any>): Double {
+    private fun priorityCalculations(operations: ArrayList<Any>): ArrayList<Any> {
+        val calculations = ArrayList<Any>()
+        var rebootIndex = operations.size
+
+        for (i in operations.indices) {
+            if (operations[i] is Char && i != operations.lastIndex && i < rebootIndex) {
+                val operator = operations[i]
+                val prevDigit = operations[i-1] as Double
+                val nextDigit: Double = operations[i+1] as Double
+                when (operator) {
+                    'x' -> {
+                        calculations.add(prevDigit * nextDigit)
+                        rebootIndex = i + 1
+                    }
+                    '/' -> {
+                        calculations.add(prevDigit / nextDigit)
+                        rebootIndex = i + 1
+                    }
+                    /*'%' -> {
+                        if (nextDigit == null) {
+                            calculations.add(prevDigit/100)
+                        }else {
+                            calculations.add((prevDigit/100) * nextDigit)
+                        }
+                    }*/
+                    else -> {
+                        calculations.add(prevDigit)
+                        calculations.add(operator)
+                    }
+                }
+            }
+            if (i > rebootIndex) {
+                calculations.add(operations[i])
+            }
+        }
+
+        return calculations
+    }
+
+    private fun finalCalculations(calculations: ArrayList<Any>): Double {
         var calculate = calculations[0] as Double
+
 
         for (i in calculations.indices) {
             if (calculations[i] is Char && i != calculations.lastIndex) {
-                
+                val operator = calculations[i]
+                val digit = calculations[i+1] as Double
+
+                if (operator == '+') {
+                    calculate += digit
+                }
+
+                if (operator == '-') {
+                    calculate -= digit
+                }
             }
         }
 

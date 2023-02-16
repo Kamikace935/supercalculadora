@@ -54,9 +54,9 @@
         <Button
             style="@style/options"
             android:background="@color/black"
-            android:textColor="@color/red"
             android:onClick="allClearAction"
-            android:text="@string/allClear"/>
+            android:text="@string/allClear"
+            android:textColor="@color/red" />
 
         <Button
             style="@style/options"
@@ -64,11 +64,7 @@
             android:textColor="@color/red"
             android:text="@string/erase"
             android:onClick="eraseAction"/>
-
-        <Button
-            style="@style/operations"
-            android:text="@string/percent"/>
-
+        
         <Button
             style="@style/operations"
             android:text="@string/split"/>

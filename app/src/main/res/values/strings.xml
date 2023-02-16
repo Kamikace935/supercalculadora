@@ -16,7 +16,7 @@
     <string name="two">2</string>
     <string name="three">3</string>
     <string name="sum">+</string>
-    <string name="point">,</string>
+    <string name="point">.</string>
     <string name="zero">0</string>
     <string name="equal">=</string>
 </resources>
